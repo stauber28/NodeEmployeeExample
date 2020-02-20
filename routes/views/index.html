@@ -1,0 +1,127 @@
+<script>
+    let employees = function() {
+        function loadEmployees() {
+            fetch("/api/employees").then(response => {
+                return response.json();
+            }).then(employees => {
+                var tbody = document.getElementById('tbody');
+                tbody.innerHTML = "";
+
+                for (var id in employees) {
+                    var employee = employees[id];
+                    var tr = "<tr>";
+                    tr += "<td>" + employee.id + "</td>";
+                    tr += "<td>" + employee.firstName + "</td>";
+                    tr += "<td>" + employee.lastName + "</td>";
+                    tr += "<td>" + employee.role + "</td>";
+                    tr += "<td>" + employee.hireDate + "</td>";
+                    tr += "</tr>";
+                    tbody.innerHTML += tr;
+                }
+            });
+        };
+
+        function saveEmployee() {
+            document.getElementById('errorContainer').innerHTML = '';
+            var form = document.getElementById('employeeForm');
+            var body = {};
+            new FormData(form).forEach((value, key) => {body[key] = value});
+
+            fetch("api/employees", {
+                method: 'POST',
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify(body)
+            }).then(response => {
+                return response.json();
+            }).then(json => {
+                var errorContainer = document.getElementById('errorContainer');
+                if (json.hasOwnProperty('errors') && json.errors.length)
+                {
+                    for(var i = 0; i < json.errors.length; ++ i)
+                    {
+                        errorContainer.innerHTML += "<div>" + json.errors[i].msg + "</div>";
+                    }
+                } else {
+                    form.reset();
+                }
+                loadEmployees();
+            });
+        };
+
+        return {
+            loadEmployees: () => loadEmployees(),
+            saveEmployee: () => saveEmployee()
+        };
+    }();
+
+    window.onload = employees.loadEmployees();
+</script>
+
+<style>
+    .page-container, .table-container {
+        text-align: center;
+    }
+    #errorContainer {
+        color: red;
+    }
+    form {
+        display: inline-block;
+        text-align: center;
+    }
+    table {
+        border-collapse: collapse;
+        display: inline-block;
+    }
+    table, th, td {
+        border: 1px solid black;
+    }
+
+    th,td {
+        padding: 4px 8px;
+        text-align: center;
+    }
+
+    form > label {
+        display: inline-block;
+        min-width: 100px;
+        text-align: right;
+    }
+</style>
+
+<html>
+    <div class="page-container">
+        <form id="employeeForm">
+            <label for="firstName">First name:</label>
+            <input type="text" id="firstName" name="firstName"><br><br>
+
+            <label for="lastName">Last name:</label>
+            <input type="text" id="lastName" name="lastName"><br><br>
+            
+            <label for="role">Role:</label>
+            <input type="text" id="role" name="role"><br><br>
+
+            <label for="hireDate">Hire Date:</label>
+            <input type="text" id="hireDate" name="hireDate"><br><br>
+
+            <input id="submitBtn" type="button" onclick="employees.saveEmployee()" value="Save">
+        </form>
+        <div id="errorContainer"></div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <th>Id</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Role</th>
+                    <th>Hire Date</th>
+                </tr>
+                <tbody id="tbody">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</html>
+

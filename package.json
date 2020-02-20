@@ -1,0 +1,15 @@
+{
+  "name": "takehomerest",
+  "version": "0.0.1",
+  "private": true,
+  "main": "app.js",
+  "scripts": {
+    "start": "node app"
+  },
+  "dependencies": {
+    "express": "~4.16.1",
+    "express-validator": "^6.4.0",
+    "node-fetch": "^2.6.0",
+    "uuidv4": "^6.0.2"
+  }
+}
